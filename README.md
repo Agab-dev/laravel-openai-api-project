@@ -1,61 +1,334 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel API - Image to Prompt Generator
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful API built with Laravel 12 that provides authentication, post management, and AI-powered image-to-prompt generation using OpenAI's Vision API.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Authentication System** - Complete auth with Sanctum (register, login, password reset)
+- **Post Management** - Full CRUD operations for posts with author relationships
+- **AI Image Analysis** - Generate descriptive prompts from images using OpenAI GPT-4 Vision
+- **API Documentation** - Auto-generated with Scramble
+- **Comprehensive Testing** - Pest PHP test suite included
+- **Security** - Rate limiting, CORS, validation, and authorization
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Framework**: Laravel 12.x
+- **PHP**: ^8.3
+- **Database**: supports MySQL
+- **Authentication**: Laravel Sanctum
+- **AI Integration**: OpenAI PHP Client
+- **API Documentation**: Scramble
+- **Testing**: Pest PHP
+- **Queue System**: Database queue driver
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.3 or higher
+- Composer
+- MySQL
+- OpenAI API Key
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Clone the repository**
 
-## Laravel Sponsors
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. **Install dependencies**
 
-### Premium Partners
+```bash
+composer install
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+3. **Environment setup**
 
-## Contributing
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. **Configure environment variables**
 
-## Code of Conduct
+Edit `.env` file and add your OpenAI API key:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```env
+APP_NAME="Laravel API"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-## Security Vulnerabilities
+DB_CONNECTION=sqlite
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-## License
+5. **Create database and run migrations**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+touch database/database.sqlite
+php artisan migrate
+```
+
+6. **Create storage symlink**
+
+```bash
+php artisan storage:link
+```
+
+7. **Seed the database (optional)**
+
+```bash
+php artisan db:seed
+```
+
+## Running the Application
+
+### Development Server
+
+```bash
+php artisan serve
+```
+
+The API will be available at `http://localhost:8000`
+
+### With Queue Worker (for async jobs)
+
+```bash
+php artisan queue:work
+```
+
+### Development with all services
+
+```bash
+composer dev
+```
+
+This runs:
+
+- Laravel server
+- Queue listener
+- Log viewer (Pail)
+- Vite dev server
+
+## API Documentation
+
+Once the application is running, visit:
+
+```
+http://localhost:8000/docs/api
+```
+
+Documentation is auto-generated using Scramble and includes all available endpoints.
+
+## API Endpoints
+
+### Authentication
+
+- `POST /api/register` - Register new user
+- `POST /api/login` - Login user
+- `POST /api/logout` - Logout user
+- `POST /api/forgot-password` - Request password reset
+- `POST /api/reset-password` - Reset password
+
+### User
+
+- `GET /api/user` - Get authenticated user details
+
+### Posts (Authenticated)
+
+- `GET /api/v1/posts` - List all posts (paginated)
+- `POST /api/v1/posts` - Create new post
+- `GET /api/v1/posts/{id}` - Get specific post
+- `PUT /api/v1/posts/{id}` - Update post
+- `DELETE /api/v1/posts/{id}` - Delete post
+
+### Image-to-Prompt Generation (Authenticated)
+
+- `GET /api/v1/prompt-generations` - List all generations (with search & sort)
+- `POST /api/v1/prompt-generations` - Generate prompt from image
+
+## Usage Examples
+
+### Register a User
+
+```bash
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+```
+
+### Login
+
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }'
+```
+
+Response:
+
+```json
+{
+    "user": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com"
+    },
+    "token": "1|xxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+### Create a Post
+
+```bash
+curl -X POST http://localhost:8000/api/v1/posts \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "My First Post",
+    "body": "This is the content of my post."
+  }'
+```
+
+### Generate Prompt from Image
+
+```bash
+curl -X POST http://localhost:8000/api/v1/prompt-generations \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "image=@/path/to/your/image.jpg"
+```
+
+Response:
+
+```json
+{
+    "data": {
+        "id": 1,
+        "image_url": "http://localhost:8000/storage/uploads/images/...",
+        "generated_prompt": "A detailed description of the image...",
+        "original_filename": "image.jpg",
+        "file_size": 245678,
+        "mime_type": "image/jpeg",
+        "created_at": "2025-12-12 10:30:00",
+        "updated_at": "2025-12-12 10:30:00"
+    }
+}
+```
+
+### List Prompt Generations with Search
+
+```bash
+# Search by prompt content
+curl -X GET "http://localhost:8000/api/v1/prompt-generations?search=landscape" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Sort by creation date (descending)
+curl -X GET "http://localhost:8000/api/v1/prompt-generations?sort=-created_at" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Combine search and sort
+curl -X GET "http://localhost:8000/api/v1/prompt-generations?search=portrait&sort=-file_size&per_page=20" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+php artisan test
+```
+
+Or with Pest directly:
+
+```bash
+./vendor/bin/pest
+```
+
+Run specific test:
+
+```bash
+php artisan test --filter=LoginApiTest
+```
+
+## Project Structure
+
+```
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/V1/
+│   │   │   │   ├── PostController.php
+│   │   │   │   └── PromptGenerationController.php
+│   │   │   └── Auth/
+│   │   ├── Requests/
+│   │   └── Resources/
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Post.php
+│   │   └── ImageGeneration.php
+│   └── Services/
+│       └── OpenAiService.php
+├── config/
+├── database/
+│   ├── migrations/
+│   └── seeders/
+├── routes/
+│   ├── api.php
+│   ├── auth.php
+│   └── web.php
+└── tests/
+    ├── Feature/
+    └── Unit/
+```
+
+## Image Upload Specifications
+
+- **Supported formats**: JPEG, JPG, PNG, GIF, SVG
+- **Max file size**: 10MB
+- **Min dimensions**: 100x100 pixels
+- **Max dimensions**: 10000x10000 pixels
+
+## Security Features
+
+- API rate limiting (60 requests/minute per user/IP)
+- Login rate limiting (5 attempts per minute)
+- CORS enabled for all origins (configurable)
+- Token-based authentication with Sanctum
+- Authorization checks on all protected routes
+- File validation and sanitization
+
+## Configuration
+
+Key configuration files:
+
+- `config/services.php` - OpenAI API configuration
+- `config/sanctum.php` - Authentication settings
+- `config/filesystems.php` - Storage configuration
+- `config/cors.php` - CORS settings
+
+## Error Handling
+
+The API returns standard HTTP status codes:
+
+- `200` - Success
+- `201` - Created
+- `204` - No Content (delete successful)
+- `401` - Unauthorized
+- `403` - Forbidden
+- `404` - Not Found
+- `422` - Validation Error
+- `429` - Too Many Requests
+- `500` - Server Error
